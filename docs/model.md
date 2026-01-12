@@ -1,6 +1,6 @@
 # Tables: (View Raw File)
 
-## User Table:
+## Users Table:
 users
 id              UUID (PK)
 email           TEXT UNIQUE NOT NULL

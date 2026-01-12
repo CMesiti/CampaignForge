@@ -29,4 +29,4 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
 - `CREATE DATABASE campaign_forge_dev OWNER campaign_forge_app;`
 
 ### Environment Variables
-- `DATABASE_URL=postgresql://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
+- `DATABASE_URL=postgresql+psycopg2://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
