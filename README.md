@@ -16,18 +16,17 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
 - `uv run main.py`
 
 (Optional For Pip installations)
-`uv pip compile pyproject.toml -o requirements.txt`
+- `uv pip compile pyproject.toml -o requirements.txt`
 
 
-# Database
+## Database
 
 ### Install PostgreSQL
-
+[PostgreSQL Installation](https://www.postgresql.org/download/)
 
 ### Create Local DB
-`CREATE USER campaign_forge_app WITH PASSWORD 'local_password';`
-`CREATE DATABASE campaign_forge_dev OWNER campaign_forge_app;`
+- `CREATE USER campaign_forge_app WITH PASSWORD 'local_password';`
+- `CREATE DATABASE campaign_forge_dev OWNER campaign_forge_app;`
 
 ### Environment Variables
-`DATABASE_URL=postgresql://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
-
+- `DATABASE_URL=postgresql://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
