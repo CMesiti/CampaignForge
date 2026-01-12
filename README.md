@@ -17,3 +17,6 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
   
 ### Run main
 - `uv run main.py`
+
+(Optional For Pip installations)
+`uv pip compile pyproject.toml -o requirements.txt`
