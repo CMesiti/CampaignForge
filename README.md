@@ -30,3 +30,4 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
 
 ### Environment Variables
 `DATABASE_URL=postgresql://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
+
