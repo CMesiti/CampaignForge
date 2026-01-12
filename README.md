@@ -4,9 +4,9 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
 [UV Installation](https://docs.astral.sh/uv/getting-started/installation/)
 
 ### Sync Environment Dependencies
-`cd server`
-`uv sync`
+- `cd server`
+- `uv sync`
 ### Install Requirements
-`uv pip install requirements.txt` 
+- `uv pip install requirements.txt` 
 ### Run main
-`uv run main.py`
+- `uv run main.py`
