@@ -4,11 +4,12 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from typing import List, Optional
 from datetime import datetime, date
 
-
+#models follow tables under DBQueries docs
 class Base(DeclarativeBase):
     pass
 
 class Users(Base):
+    #table metadata
     __tablename__ = "users"
     #Python Dtypes = SQL Dtypes - Mapping
     user_id: Mapped[UUID] = mapped_column(primary_key = True, server_default=text("get_random_uuid()")) 
