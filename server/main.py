@@ -5,7 +5,6 @@ from sqlalchemy import text
 # Refactor this into an app factory
 # Add SQLAlchemy sessions properly
 # Structure Campaign Forge for scaling (routes / blueprints)
-
 app = Flask(__name__)
 db = get_connection()
 

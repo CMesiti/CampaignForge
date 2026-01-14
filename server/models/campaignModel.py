@@ -8,12 +8,12 @@ from models import ModelBase
 class Campaigns(ModelBase):
     #table metadata
     __tablename__ = "campaigns"
-    campaign_id: Mapped[UUID] = mapped_column(primary_key= True, server_default = text("gen_random_uuid()"))
+    campaign_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key= True, server_default = text("gen_random_uuid()"))
     title: Mapped[str] = mapped_column(VARCHAR(100), nullable= False)
     description: Mapped[Optional[str]] = mapped_column(TEXT)
     created_at: Mapped[TIMESTAMP] = mapped_column(server_default=func.current_timestamp())
     #Foreign key constraint takes text SQL referencing another table attribute
-    created_by: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"))
+    created_by: Mapped[UUID] = mapped_column(ForeignKey("users.user_id"), nullable=False)
 
 
     def __repr__(self):
