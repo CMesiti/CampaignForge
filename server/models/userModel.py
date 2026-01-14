@@ -1,14 +1,11 @@
 from sqlalchemy import String, ForeignKey, TIMESTAMP, VARCHAR, text, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
-from datetime import datetime, date
+from models import ModelBase
 
 #models follow tables under DBQueries docs
-class Base(DeclarativeBase):
-    pass
-
-class Users(Base):
+class Users(ModelBase):
     #table metadata
     __tablename__ = "users"
     #Python Dtypes = SQL Dtypes - Mapping
