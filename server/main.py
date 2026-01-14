@@ -16,6 +16,7 @@ def landing():
 @app.route("/users")
 def get_users():
     result = "None"
+    #begin once method
     with db.begin() as connection:
         try:
             result = connection.execute(text("SELECT * FROM users"))
