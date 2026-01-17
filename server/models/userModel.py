@@ -1,5 +1,5 @@
-from sqlalchemy import String, ForeignKey, TIMESTAMP, VARCHAR, text, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import VARCHAR, text, func
+from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
 from models import ModelBase
@@ -13,9 +13,9 @@ class Users(ModelBase):
     user_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True), primary_key = True, server_default=text("gen_random_uuid()")) 
     #Mapped type hints, conversion python to database types
     email: Mapped[str] = mapped_column(VARCHAR(355), unique=True, nullable=False )
-    pass_hash: Mapped[datetime] = mapped_column(VARCHAR(200), nullable=False)
+    pass_hash: Mapped[str] = mapped_column(VARCHAR(200), nullable=False)
     display_name: Mapped[Optional[str]] = mapped_column(VARCHAR(50))
-    created_at: Mapped[str] = mapped_column(server_default = func.current_timestamp())
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default = func.current_timestamp())
     #One-to-Many Relationship
     campaigns = relationship("Campaigns", back_populates = "user")
 
@@ -25,7 +25,12 @@ class Users(ModelBase):
         email - {self.email},
         display_name - {self.display_name}\n"""
     
-
+    def get_json(self)->dict:
+        return {"user_id":self.user_id, 
+                "email":self.email, 
+                "display_name":self.display_name, 
+                "created_at": self.created_at,
+                "campaigns": self.campaigns}
 
 
 

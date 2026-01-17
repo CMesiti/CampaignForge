@@ -1,13 +1,12 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from config.db import get_connection
 from sqlalchemy import text, select
 from sqlalchemy.orm import Session
-from models import Users, Campaigns
+from models import Users, Campaigns, ModelBase
 
 # Refactor this into an app factory
 # Add SQLAlchemy sessions properly
 # Structure Campaign Forge for scaling (routes / blueprints)
-
 # CORE vs ORM, The ORM uses sessions and Core uses a straight connection to the DBAPI
 app = Flask(__name__)
 db = get_connection()
@@ -15,6 +14,81 @@ db = get_connection()
 @app.route("/")
 def landing():
     return "Server is up and running"
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    pass
+
+
+@app.route("/users")
+def get_users():
+    result = {"Message":"", "Data":[]}
+    try:
+        with Session(db) as session:
+            stmt = select(Users)
+            #scalars returns list of objs and execute returns list of rows
+            users_ls = session.scalars(stmt).all()
+            for user in users_ls:
+                result["Data"].append(user.get_json())
+            print(result)
+        result["Message"] = "GET Successful"
+        return jsonify({"Users":result["Message"]})
+
+    except:
+        result["Message"] = "GET ERROR"
+        return jsonify({"ERROR":result})
+
+
+@app.route("/users", methods=["POST"])
+def register_user():
+    result = {"Message":"", "Data":""}
+    data = request.get_json()
+    #Validate information
+
+    #Assign and Commit New User
+    #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
+    try:
+        newUser = Users()
+        with Session(db) as session:
+            session.add(newUser)
+            session.commit()
+        result = "Query Successful"
+    except:
+        result["Message"] = "ADD ERROR"
+    return jsonify(result)
+
+
+
+@app.route("/users", methods = ["PUT"])
+def update_user():
+    pass   
+
+
+
+@app.route("/users", methods=["DELETE"])
+def remove_user():
+    pass
+
+#Lets try a different method. This endpoint will group operations together, 
+@app.route("/campaigns", methods=["GET", "POST", "PUT", "DELETE"])
+def campaign_dashboard():
+    if request.method == "GET":
+        with Session(db) as session:
+            pass
+    elif request.method == "POST":
+        pass
+    elif request.method == "PUT":
+        pass
+    else:
+        pass
+
+
+
+if __name__ == "__main__":
+    ModelBase.metadata.create_all(db)
+    app.run(debug=True)
+
+
 
 # @app.route("/users")
 # def get_users():
@@ -39,64 +113,3 @@ def landing():
 #     except:
 #         print("Query Error")
 #     return str(results.fetchall())
-
-
-@app.route("/users")
-def get_users():
-    result = "None"
-    try:
-        with Session(db) as session:
-            stmt = select(Users)
-            #scalars returns list of objs and execute returns list of rows
-            user_obj = session.scalars(stmt).all()
-        result = str(user_obj)
-    except:
-        result = "Get Query Error"
-    return result
-
-@app.route("/users", methods=["POST"])
-def add_user():
-    result = "None"
-    try:
-        newUser = Users()
-        newUser.email = "example@example.com"
-        newUser.display_name = "tester"
-        newUser.pass_hash = "mypass123"
-        with Session(db) as session:
-            session.add(newUser)
-            session.commit()
-        result = "Query Successful"
-    except:
-        result = "Insert Query Error"
-    return result
-
-
-
-@app.route("/users", methods = ["PUT"])
-def update_user():
-    pass   
-
-
-
-@app.route("/users", methods=["DELETE"])
-def remove_user():
-    pass
-
-#Lets try a different method. This endpoint will group operations together, 
-@app.route("/campaigns", methods=["GET", "POST", "PUT", "DELETE"])
-def campaign_dashboard():
-    if request.method == "GET":
-        pass
-    elif request.method == "POST":
-        pass
-    elif request.method == "PUT":
-        pass
-    else:
-        pass
-
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
-
-

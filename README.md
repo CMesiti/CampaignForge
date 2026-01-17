@@ -13,7 +13,10 @@ Dungeon Master Assistant to help guide a DM through random encounters, NPC respo
 - `uv sync`
 
 ### Run main
-- `uv run main.py`
+- `macOS/Linux: export FLASK_APP=main.py.`
+- `Windows (Command Prompt): set FLASK_APP=main.py.`
+- `Windows (PowerShell): $env:FLASK_APP="main.py"`
+- `flask run`
 
 (Optional For Pip installations)
 - `uv pip compile pyproject.toml -o requirements.txt`
