@@ -26,5 +26,8 @@ class Campaigns(ModelBase):
             Description - {self.description}
             Created_By - {self.created_by}
             Owner_Email - {self.user.email}\n"""
+
     
     
+def campaign_to_dict(campaign):
+    pass

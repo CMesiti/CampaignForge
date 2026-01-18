@@ -2,7 +2,7 @@ from sqlalchemy import VARCHAR, text, func
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
-from models import ModelBase
+from models import ModelBase, campaign_to_dict
 from datetime import datetime
 
 #models follow tables under DBQueries docs
@@ -25,12 +25,14 @@ class Users(ModelBase):
         email - {self.email},
         display_name - {self.display_name}\n"""
     
-    def get_json(self)->dict:
-        return {"user_id":self.user_id, 
-                "email":self.email, 
-                "display_name":self.display_name, 
-                "created_at": self.created_at,
-                "campaigns": self.campaigns}
+
+
+def user_to_dict(user)->dict:
+    return {"user_id":user.user_id, 
+            "email":user.email, 
+            "display_name":user.display_name, 
+            "created_at": user.created_at,
+            "campaigns": [campaign_to_dict(campaign) for campaign in user.campaigns]}
 
 
 

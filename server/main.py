@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, make_response
 from config.db import get_connection
 from sqlalchemy import text, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 from models import Users, Campaigns, ModelBase
 
 # Refactor this into an app factory
@@ -25,13 +25,14 @@ def get_users():
     result = {"Message":"", "Data":[]}
     try:
         with Session(db) as session:
-            stmt = select(Users)
+            #this is a eager loading technique solving the N+1 Query problem
+            stmt = select(Users).options(selectinload(Users.campaigns))
             #scalars returns list of objs and execute returns list of rows
             users_ls = session.scalars(stmt).all()
-            for user in users_ls:
-                result["Data"].append(user.get_json())
-            print(result)
+            # for user in users_ls:
+            #     result["Data"].append(user.get_json())
         result["Message"] = "GET Successful"
+        print(result)
         return jsonify({"Users":result["Message"]})
 
     except:
