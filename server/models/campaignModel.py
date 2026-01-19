@@ -28,7 +28,7 @@ class Campaigns(ModelBase):
             Owner_Email - {self.user.email}\n"""
 
     
-    
+#Basic DTO Method
 def campaign_to_dict(campaign:Campaigns)->dict:
     return {
         "campaign_id": campaign.campaign_id,

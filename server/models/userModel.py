@@ -25,8 +25,7 @@ class Users(ModelBase):
         email - {self.email},
         display_name - {self.display_name}\n"""
     
-
-
+#Basic DTO method, convert all to dictionary
 def user_to_dict(user:Users)->dict:
     return {"user_id":user.user_id, 
             "email":user.email, 

@@ -1,8 +1,18 @@
 from flask import Flask, jsonify, request, make_response
 from config.db import get_connection
-from sqlalchemy import text, select
+from sqlalchemy import text, select, update, delete, insert
 from sqlalchemy.orm import Session, selectinload
 from models import Users, Campaigns, ModelBase, user_to_dict
+import bcrypt
+
+def hash_pass(pswd):
+    salt = bcrypt.gensalt()
+    hash = bcrypt.hashpw(pswd, salt)
+    return hash
+
+def compare_pass(entered_pswd, hash):
+    return bcrypt.checkpw(entered_pswd, hash)
+
 
 
 # Refactor this into an app factory
@@ -18,12 +28,13 @@ def landing():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    #401 errors for unauthorized
     pass
 
 
 @app.route("/users")
 def get_users():
-    result = {"Message":"", "Users":[]}
+    result = {"Users":[],"Message":""}
     try:
         with Session(db) as session:
             #this is a eager loading technique solving the N+1 Query problem
@@ -34,7 +45,7 @@ def get_users():
                 result["Users"].append(user_to_dict(user))
         result["Message"] = "GET Successful"
         print(result)
-        return jsonify({"Data":result})
+        return jsonify({"Data":result}), 200
     except Exception as e:
         result["Message"] = f"GET ERROR, {e}"
         return jsonify({"ERROR":result})
@@ -42,7 +53,7 @@ def get_users():
 
 @app.route("/users", methods=["POST"])
 def register_user():
-    result = {"Message":"", "Users":""}
+    result = {"Users":"","Message":""}
     data = request.get_json()
     #Validate information, **CHECK FOR DUPLICATES**
     try:
@@ -54,11 +65,19 @@ def register_user():
             return jsonify({"ERROR":result})
         if "display_name" not in data:
             data["display_name"] = data["email"].split('@')[0]
+
         #Assign and Commit New User
         with Session(db) as session:
+            email_stmt = select(Users).where(Users.email == data["email"])
+            email_scalar = session.scalars(email_stmt).one()
+            if email_scalar:
+                result["Message"] = "Email Taken"
+                return jsonify({"ERROR":result}), 201
+    
             newUser = Users()
             newUser.email =data["email"]
-            newUser.pass_hash = data["password"]
+            pswd = hash_pass(data["password"])
+            newUser.pass_hash = pswd
             newUser.display_name=data["display_name"]
             #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
             session.add(newUser)
@@ -71,19 +90,61 @@ def register_user():
     
     except Exception as e:
         result["Message"] = f"Register ERROR, {e}"
-        return jsonify({"ERROR": result})
+        return jsonify({"ERROR": result}), 400
 
 
 
-@app.route("/users", methods = ["PUT"])
-def update_user():
-    pass   
+@app.route("/users/<uuid:user_id>", methods = ["PUT"])
+def update_user(user_id):
+    #form is a dictionary
+    pswd = request.form.get("password", None)
+    display_name = request.form.get("display_name", None)
+    try:
+        user_stmt = select(Users).where(Users.user_id == user_id)
+        if pswd:
+            #add password constraints
+            if len(pswd) <= 12:
+                return jsonify({"ERROR":"Password must be 12 or more chars"})
+            elif pswd.isalnum() or " " in pswd:
+                return jsonify({"ERROR":"Must contain special character and no spaces"})
+            #hash and store
+            hash = hash_pass(pswd)
+            #get user
+            with Session(db) as session:
+                user_obj = session.scalars(user_stmt).one()
+                user_obj.pass_hash = hash
+                session.commit()
+            return jsonify({"Message": "Successfully updated password"})
+        elif display_name:
+            if len(display_name) > 50:
+                return jsonify({"ERROR":"Name must be less than 50 chars"})
+            elif " " in display_name:
+                return jsonify({"ERROR":"No Spaces Allowed"})
+            with Session(db) as session:
+                user_obj = session.scalars(user_stmt).one()
+                user_obj.display_name = display_name
+                session.commit()
+            return jsonify({"Message": "Successfully updated display name"})
+        else:
+            return jsonify({"ERROR": "Missing Update Information"}), 400
+    except Exception as e:
+        return jsonify({"ERROR": e}), 400
 
 
 
-@app.route("/users", methods=["DELETE"])
-def remove_user():
-    pass
+@app.route("/users/<uuid:user_id>", methods=["DELETE"])
+def remove_user(user_id):
+    pswd = request.form.get("password", None)
+    try:
+        if not pswd:
+            return jsonify({"ERROR":"Requires Password"}), 401
+        with Session(db) as session:
+            stmt = delete(Users).where(Users.user_id == user_id)
+            session.execute(stmt)
+        return jsonify({"Message":"User Successfully deleted"})
+    except Exception as e:
+        return jsonify({"ERROR": e}), 400
+    #add session auth, ensure current user request, and recieve password
 
 #Lets try a different method. This endpoint will group operations together, 
 @app.route("/campaigns", methods=["GET", "POST", "PUT", "DELETE"])
