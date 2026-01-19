@@ -35,29 +35,43 @@ def get_users():
         result["Message"] = "GET Successful"
         print(result)
         return jsonify({"Data":result})
-
-    except:
-        result["Message"] = "GET ERROR"
+    except Exception as e:
+        result["Message"] = f"GET ERROR, {e}"
         return jsonify({"ERROR":result})
 
 
 @app.route("/users", methods=["POST"])
 def register_user():
-    result = {"Message":"", "Data":""}
+    result = {"Message":"", "Users":""}
     data = request.get_json()
-    #Validate information
-
-    #Assign and Commit New User
-    #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
+    #Validate information, **CHECK FOR DUPLICATES**
     try:
-        newUser = Users()
+        if "email" not in data:
+            result["Message"] = "Missing Email"
+            return jsonify({"ERROR":result})
+        if "password" not in data:
+            result["Message"] = "Missing Password"
+            return jsonify({"ERROR":result})
+        if "display_name" not in data:
+            data["display_name"] = data["email"].split('@')[0]
+        #Assign and Commit New User
         with Session(db) as session:
+            newUser = Users()
+            newUser.email =data["email"]
+            newUser.pass_hash = data["password"]
+            newUser.display_name=data["display_name"]
+            #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
             session.add(newUser)
             session.commit()
-        result = "Query Successful"
-    except:
-        result["Message"] = "ADD ERROR"
-    return jsonify(result)
+            #after flush we assign server defaults to obj
+            result["Users"] = user_to_dict(newUser)
+
+        result["Message"] = "Created User Successfully"
+        return jsonify({"Data": result})
+    
+    except Exception as e:
+        result["Message"] = f"Register ERROR, {e}"
+        return jsonify({"ERROR": result})
 
 
 
