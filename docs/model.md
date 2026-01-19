@@ -37,7 +37,7 @@ user_id         UUID (FK → users.id)
 campaign_id     UUID (FK → campaigns.id)
 
 name            TEXT NOT NULL
-class           TEXT
+class           JSONB
 level           INTEGER
 race            TEXT
 
