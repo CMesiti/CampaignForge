@@ -3,7 +3,7 @@ from config.db import get_connection
 from sqlalchemy import text, select, update, delete, insert
 from sqlalchemy.orm import Session, selectinload
 from models import Users, Campaigns, ModelBase, user_to_dict
-from argon2 import PasswordHasher
+from argon2 import PasswordHasher, exceptions
 
 def hash_pass(pswd):
     ph = PasswordHasher()
@@ -12,7 +12,11 @@ def hash_pass(pswd):
 
 def check_pass(entered_pswd, hash):
     ph = PasswordHasher()
-    return ph.verify(hash, entered_pswd)
+    try:
+        ph.verify(hash, entered_pswd)
+        return True, None
+    except exceptions.VerifyMismatchError as e:
+        return False, e
 
 
 
@@ -35,7 +39,8 @@ def login():
 
 @app.route("/users")
 def get_users():
-    result = {"Users":[],"Message":""}
+    response = {"Users":[],"Message":""}
+
     try:
         with Session(db) as session:
             #this is a eager loading technique solving the N+1 Query problem
@@ -43,63 +48,73 @@ def get_users():
             #scalars returns list of objs and execute returns list of rows
             users_ls = session.scalars(stmt).all()
             for user in users_ls:
-                result["Users"].append(user_to_dict(user))
-        result["Message"] = "GET Successful"
-        print(result)
-        return jsonify({"Data":result}), 200
+                response["Users"].append(user_to_dict(user))
+        response["Message"] = "GET Successful"
+        print(response)
+        return jsonify({"Data":response}), 200
+    
+
     except Exception as e:
-        result["Message"] = f"GET ERROR, {e}"
-        return jsonify({"ERROR":result}), 400
+        response["Message"] = f"GET ERROR, {e}"
+        return jsonify({"ERROR":response}), 400
 
 
 @app.route("/users", methods=["POST"])
 def register_user():
-    result = {"Users":"","Message":""}
+    response = {"Users":"","Message":""}
     data = request.get_json()
     #Validate information, **CHECK FOR DUPLICATES**
     try:
         if "email" not in data:
-            result["Message"] = "Missing Email"
-            return jsonify({"ERROR":result})
+            response["Message"] = "Missing Email"
+            return jsonify({"ERROR":response})
         if "password" not in data:
-            result["Message"] = "Missing Password"
-            return jsonify({"ERROR":result})
+            response["Message"] = "Missing Password"
+            return jsonify({"ERROR":response})
         if "display_name" not in data:
             data["display_name"] = data["email"].split('@')[0]
 
+
+        pswd = data["password"]
+        email = data["email"]
+        display_name = data["display_name"]
         #Assign and Commit New User
         with Session(db) as session:
-            email_stmt = select(Users).where(Users.email == data["email"])
-            email_scalar = session.scalars(email_stmt).one()
-            if email_scalar:
-                result["Message"] = "Email Taken"
-                return jsonify({"ERROR":result}), 400
-    
+            email_stmt = select(Users).where(Users.email == email)
+            rows = session.scalars(email_stmt).first()
+            print(rows)
+            if rows:
+                response["Message"] = "Email Taken"
+                return jsonify({"ERROR":response}), 400
+            if len(pswd) <= 12:
+                return jsonify({"ERROR":"Password must be 12 or more chars"}), 400
+            elif pswd.isalnum() or " " in pswd:
+                return jsonify({"ERROR":"Must contain special character and no spaces"}), 400
             newUser = Users()
-            newUser.email =data["email"]
-            pswd = hash_pass(data["password"])
-            newUser.pass_hash = pswd
-            newUser.display_name=data["display_name"]
+            newUser.email = email
+            newUser.pass_hash = hash_pass(pswd)
+            newUser.display_name = display_name
             #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
             session.add(newUser)
             session.commit()
             #after flush we assign server defaults to obj
-            result["Users"] = user_to_dict(newUser)
-
-        result["Message"] = "Created User Successfully"
-        return jsonify({"Data": result}), 201
+            response["Users"] = user_to_dict(newUser)
+        response["Message"] = "Created User Successfully"
+        return jsonify({"Data": response}), 201
     
+
+
     except Exception as e:
-        result["Message"] = f"Register ERROR, {e}"
-        return jsonify({"ERROR": result}), 400
+        response["Message"] = f"Register ERROR, {e}"
+        return jsonify({"ERROR": response}), 400
 
 
-#**UPDATE** ORM operation
 @app.route("/users/<uuid:user_id>", methods = ["PUT"])
 def update_user(user_id):
     #form is a dictionary
     pswd = request.form.get("password", None)
     display_name = request.form.get("display_name", None)
+
     try:
         if pswd:
             #add password constraints
@@ -127,6 +142,8 @@ def update_user(user_id):
             return jsonify({"Message": "Successfully updated display name"}), 200
         else:
             return jsonify({"ERROR": "Missing Update Information"}), 400
+        
+
     except Exception as e:
         return jsonify({"ERROR": e}), 400
 
@@ -135,16 +152,20 @@ def update_user(user_id):
 @app.route("/users/<uuid:user_id>", methods=["DELETE"])
 def remove_user(user_id):
     pswd = request.form.get("password", None)
+    
     try:
         with Session(db) as session:
-            # stmt = select(Users).where(Users.user_id == user_id)
-            # user = session.scalars(stmt).one()
-            # if not(pswd and check_pass(pswd, user.pass_hash)):
-            #     return jsonify({"ERROR":"Incorrect Password"}), 401
             user = session.get(Users, user_id)
+            if not pswd:
+                return jsonify({"ERROR":"Password Required"}), 401
+            is_valid, e = check_pass(pswd, user.pass_hash)
+            if not is_valid:
+                return jsonify({"ERROR":f"Validation Error {e}"}), 401
             session.delete(user)
             session.commit()
         return jsonify({"Message":"User Successfully deleted"}), 200
+    
+    
     except Exception as e:
         return jsonify({"ERROR": e}), 400
     #add session auth, ensure current user request, and recieve password
@@ -174,24 +195,24 @@ if __name__ == "__main__":
 
 # @app.route("/users")
 # def get_users():
-#     result = "None"
+#     response = "None"
 #     #begin once method
 #     with db.begin() as connection:
 #         try:
-#             result = connection.execute(text("SELECT * FROM users"))
+#             response = connection.execute(text("SELECT * FROM users"))
 #             print("Successful Query!")
 #         except:
 #             print("Query ERROR")
     
-#     return str(result.fetchall())
+#     return str(response.fetchall())
 
 # @app.route("/campaigns")
 # def get_campaigns():
-#     results = "None"
+#     responses = "None"
 #     try:
 #         with db.begin() as connection:
-#             results = connection.execute(text("SELECT * FROM campaigns"))
+#             responses = connection.execute(text("SELECT * FROM campaigns"))
 #             print("Successful Query!")
 #     except:
 #         print("Query Error")
-#     return str(results.fetchall())
+#     return str(responses.fetchall())
