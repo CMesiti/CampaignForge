@@ -7,13 +7,11 @@ users_bp = Blueprint("users", __name__, url_prefix = "/users/v1")
 
 @users_bp.route("/")
 def get_users():
-    response = {"Users":[],"Message":""}
+    response = {"Users":"","Message":""}
     try:
         service = UserService()
-        user_data = service.get_user_data()
-        if "ERROR" in user_data:
-            return jsonify(user_data)
-        response["Message"] = "GET Successful"
+        user_data, message = service.get_user_data()
+        response["Message"] = message
         response["Users"] = user_data
         return jsonify({"Data":response}), 200
     except Exception as e:
@@ -28,43 +26,11 @@ def register_user():
     data = request.get_json()
     #Validate information, **CHECK FOR DUPLICATES**
     try:
-        if "email" not in data:
-            response["Message"] = "Missing Email"
-            return jsonify({"ERROR":response})
-        if "password" not in data:
-            response["Message"] = "Missing Password"
-            return jsonify({"ERROR":response})
-        if "display_name" not in data:
-            data["display_name"] = data["email"].split('@')[0]
-        pswd = data["password"]
-        email = data["email"]
-        display_name = data["display_name"]
-        #Assign and Commit New User
-        with Session(db) as session:
-            email_stmt = select(Users).where(Users.email == email)
-            rows = session.scalars(email_stmt).first()
-            print(rows)
-            if rows:
-                response["Message"] = "Email Taken"
-                return jsonify({"ERROR":response}), 400
-            if len(pswd) <= 12:
-                return jsonify({"ERROR":"Password must be 12 or more chars"}), 400
-            elif pswd.isalnum() or " " in pswd:
-                return jsonify({"ERROR":"Must contain special character and no spaces"}), 400
-            newUser = Users()
-            newUser.email = email
-            newUser.pass_hash = hash_pass(pswd)
-            newUser.display_name = display_name
-            #Add_all adds list of objects, commit method flushes pending transactions and commits to database.
-            session.add(newUser)
-            session.commit()
-            #after flush we assign server defaults to obj
-            response["Users"] = user_to_dict(newUser)
-        response["Message"] = "Created User Successfully"
-        return jsonify({"Data": response}), 201
-    
-
-
+        service = UserService()
+        user_created, message = service.register_new_user(data)
+        response["Message"] = message
+        response["Users"] = user_created
+        return jsonify({"user_data": response}), 201
     except Exception as e:
         response["Message"] = f"Register ERROR, {e}"
         return jsonify({"ERROR": response}), 400
