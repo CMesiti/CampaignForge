@@ -1,19 +1,21 @@
-from sqlalchemy import create_engine
 from dotenv import load_dotenv
-from flask import current_app, g
 import os
+from flask import current_app
+from flask_sqlalchemy import SQLAlchemy
 from models import ModelBase
 
-#This may need changes later, every connection request calls create_all()
+#gives access to db.Models and db.Sessions
+db = SQLAlchemy(model_class = ModelBase)
+#Using flask sqlalchemy we initialize the extension on current application.
 load_dotenv()
 def init_db():
-    eng = get_connection()
-    ModelBase.metadata.create_all(eng)
-
-def get_connection():
-    print("Creating Database Connection...")
+    print("Creating Connection Pool...")
     URL = os.getenv("DATABASE_URL")
-    if "db" not in g:
-        g.db = create_engine(URL)
-    #commit as you go architecture
-    return g.db
+    current_app.config["SQLALCHEMY_DATABASE_URI"] = URL
+    db.init_app(current_app)
+    db.create_all()
+
+
+#Flask-sqlalchemy handles the engine object for us.
+#The engine is not a connection, it is an object for the connection pool, telling how to create connection.
+#The engine provides us with a connection object

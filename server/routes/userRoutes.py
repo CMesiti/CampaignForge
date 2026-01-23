@@ -1,39 +1,46 @@
-from flask import Blueprint, request, url_for, jsonify
-from config.db import get_connection
-from models import Users, user_to_dict
-from services.userService import UserService
+from flask import Blueprint, request, jsonify
+from models import Users
+from services.userService import UserService, ServiceError
+
 #blueprint syntax, name, where it's defined, and url_prefix, versioning 1 of bp
 users_bp = Blueprint("users", __name__, url_prefix = "/users/v1")
 
 @users_bp.route("/")
 def get_users():
-    response = {"Users":"","Message":""}
     try:
         service = UserService()
-        user_data, message = service.get_user_data()
-        response["Message"] = message
-        response["Users"] = user_data
-        return jsonify({"Data":response}), 200
+        user_data = service.get_user_data()
+        return jsonify({
+            "Data": user_data
+            }), 200
+    except ServiceError as e:
+        return jsonify({
+            "ERROR":str(e)
+            }), 400
     except Exception as e:
-        response["Message"] = f"GET ERROR, {e}"
-        return jsonify({"ERROR":response}), 400
-    
+        return jsonify({
+            "ERROR":str(e)
+            }), 500
 
 
 @users_bp.route("/", methods=["POST"])
 def register_user():
-    response = {"Users":"","Message":""}
     data = request.get_json()
     #Validate information, **CHECK FOR DUPLICATES**
     try:
         service = UserService()
-        user_created, message = service.register_new_user(data)
-        response["Message"] = message
-        response["Users"] = user_created
-        return jsonify({"user_data": response}), 201
+        user_created = service.register_new_user(data)
+        return jsonify({
+            "user_data": user_created
+            }), 201
+    except ServiceError as e:
+        return jsonify({
+            "ERROR":str(e)
+            }), 400
     except Exception as e:
-        response["Message"] = f"Register ERROR, {e}"
-        return jsonify({"ERROR": response}), 400
+        return jsonify({
+            "ERROR": str(e)
+            }), 500
     
 
 @users_bp.route("/users/<uuid:user_id>", methods = ["PUT"])
