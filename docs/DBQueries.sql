@@ -77,8 +77,6 @@ CREATE TABLE IF NOT EXISTS player_characters (
 		ON DELETE CASCADE
 )
 
-
-
 -- Insert Mock data for testing purposes.
 INSERT INTO users (email, pass_hash, display_name) 
 VALUES (
