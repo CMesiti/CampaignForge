@@ -56,6 +56,28 @@ CREATE TABLE IF NOT EXISTS campaign_members (
 )
 
 
+-- player characters table:
+CREATE TABLE IF NOT EXISTS player_characters (
+	character_id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
+	campaign_id UUID NOT NULL, 
+	user_id UUID NOT NULL, 
+	character_name VARCHAR(50) NOT NULL, 
+	character_class JSONB, 
+	character_stats JSONB,
+	character_level INTEGER CHECK (character_level >= 1),
+	character_hitpoints INTEGER CHECK (character_hitpoints > 0), 
+	created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, 
+	CONSTRAINT character_campaign_fk
+		FOREIGN KEY (campaign_id) 
+		REFERENCES campaigns(campaign_id)
+		ON DELETE CASCADE, 
+	CONSTRAINT character_user_fk
+		FOREIGN KEY (user_id)
+		REFERENCES users(user_id)
+		ON DELETE CASCADE
+)
+
+
 
 -- Insert Mock data for testing purposes.
 INSERT INTO users (email, pass_hash, display_name) 
