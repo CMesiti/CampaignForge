@@ -16,6 +16,7 @@ class Campaigns(ModelBase):
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.current_timestamp())
     #Foreign key constraint takes text SQL referencing another table attribute
     created_by: Mapped[UUID] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    
     #Many-to-One Relationship, 1 user can have many campaigns
     user = relationship("Users", back_populates="campaigns")
 
