@@ -33,7 +33,7 @@ class UserService:
         rows = db.session.scalars(email_stmt).first()
         print(rows)
         if rows:
-            raise "Email Taken"
+            raise ServiceError("Email Taken")
         if len(pswd) <= 12:
             raise ServiceError("Password must be 12 or more chars")
         elif " " in pswd or pswd.isalnum():
@@ -64,7 +64,7 @@ class UserService:
             user = db.session.get(Users, user_id)
             user.pass_hash = hash
             db.session.commit()
-            return user
+            return user_to_dict(user)
         elif display_name:
             if len(display_name) > 50:
                 raise ServiceError("Name must be less than 50 chars")
@@ -73,7 +73,7 @@ class UserService:
             user = db.session.get(Users, user_id)
             user.display_name = display_name
             db.session.commit()
-            return user
+            return user_to_dict(user)
         else:
             raise ServiceError("Missing Update Information")
     def remove_existing_user(self, user_id, pswd):
@@ -85,3 +85,4 @@ class UserService:
             raise ServiceError(f"Validation Error {e}")
         db.session.delete(user)
         db.session.commit()
+        return user_to_dict(user)

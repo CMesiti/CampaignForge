@@ -43,31 +43,40 @@ def register_user():
             }), 500
     
 
-@users_bp.route("/users/<uuid:user_id>", methods = ["PUT"])
+@users_bp.route("/<uuid:user_id>", methods = ["PUT"])
 def update_user(user_id):
     #form is a dictionary
     data = request.form
+    print(data)
     try:
         service = UserService()
         user_updated = service.update_existing_user(user_id, data)
         return jsonify({
             "user_data": user_updated
             }), 200
+    except ServiceError as e:
+        return jsonify(
+            {"ERROR": str(e)
+             }), 400
     except Exception as e:
-        return jsonify({"ERROR": e}), 400
+        return jsonify(
+            {"ERROR": str(e)
+             }), 500
 
 
-@users_bp.route("/users/<uuid:user_id>", methods=["DELETE"])
+@users_bp.route("/<uuid:user_id>", methods=["DELETE"])
 def remove_user(user_id):
     pswd = request.form.get("password", None)
     try:
         service = UserService()
-        user_deleted = service.remove_existing_user(user_id)
+        user_deleted = service.remove_existing_user(user_id, pswd)
         return jsonify({
             "user_data": user_deleted
             }), 200
-    
-
+    except ServiceError as e:
+        return jsonify(
+            {"ERROR": str(e)
+             }), 400
     except Exception as e:
-        return jsonify({"ERROR": e}), 400
+        return jsonify({"ERROR": e}), 500
     #add session auth, ensure current user request, and recieve password
