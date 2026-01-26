@@ -52,3 +52,13 @@ created_at      TIMESTAMP
 User
  ├── CampaignMember ── Campaign
  └── PlayerCharacter ── Campaign
+
+CampaignMembers = (user ↔ campaign ↔ role)
+PlayerCharacter = (character ↔ campaign ↔ owner user)
+
+CampaignMembers
+- Who is allowed in this campaign, and in what capacity?
+
+PlayerCharacter
+- What fictional entities exist in this campaign, and who owns them?
+- The player character table is a list of all characters from all campaigns from all users
