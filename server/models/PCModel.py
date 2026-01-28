@@ -2,7 +2,7 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID, ARRAY, ENUM, VARCHAR, TI
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey, func, text
 from datetime import datetime
-
+from models import ModelBase
 
 # potential import - class JSONB.Comparator
 # inherits from sqlalchemy.dialects.postgresql.json.Comparator
@@ -22,7 +22,7 @@ class PlayerCharacters(ModelBase):
     character_stats:Mapped[dict] = mapped_column(JSONB)
     character_level:Mapped[int] = mapped_column(INTEGER)
     character_hitpoints:Mapped[int] = mapped_column(INTEGER)
-    created_at:Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.current_timestamp())
+    created_at:Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.current_timestamp())
     #declare table columns, dtypes, and mappings. 
 
     def __repr__(self):
