@@ -1,5 +1,5 @@
 from sqlalchemy.dialects.postgresql import JSONB, UUID, ARRAY, ENUM, VARCHAR, TIMESTAMP
-from models import ModelBase
+from models import ModelBase, Users, Campaigns
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import ForeignKey, text
 from datetime import datetime
@@ -15,6 +15,8 @@ class CampaignMembers(ModelBase):
     user_id: Mapped[UUID] = mapped_column(UUID(as_uuid=True),ForeignKey("users.user_id", ondelete="CASCADE"), primary_key = True)
     user_role: Mapped[dict] = mapped_column(ENUM(('DM', 'Player', 'Viewer'), name = "USER_ROLE"))
     joined_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True))
+    user: Mapped["Users"] = relationship()
+    campaign: Mapped["Campaigns"] = relationship() 
     
     def __repr__(self):
         return f"""
@@ -23,3 +25,7 @@ class CampaignMembers(ModelBase):
             user_role - {self.user_role}
             joined_at - {self.joined_at}
             """
+
+
+def cm_to_dict(cpm_member:CampaignMembers):
+    pass

@@ -2,7 +2,7 @@ from sqlalchemy import  ForeignKey, VARCHAR, text, func
 from sqlalchemy.dialects.postgresql import UUID, TEXT, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
-from models import ModelBase
+from models import ModelBase, CampaignMembers
 from datetime import datetime
 
 #models follow tables under DBQueries docs, refer SQLalchemy ORM documentation
@@ -19,7 +19,7 @@ class Campaigns(ModelBase):
     
     #Many-to-One Relationship, 1 user can have many campaigns
     user = relationship("Users", back_populates="campaigns")
-
+    campaign_members = relationship()
     def __repr__(self):
         return f"""Campaign:
             campaign_id - {self.campaign_id}
