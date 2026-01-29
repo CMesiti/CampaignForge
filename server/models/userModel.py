@@ -2,7 +2,7 @@ from sqlalchemy import VARCHAR, text, func
 from sqlalchemy.dialects.postgresql import UUID, TIMESTAMP
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
-from models import ModelBase, campaign_to_dict
+from models import ModelBase, CampaignMembers, Campaigns, PlayerCharacters, campaign_to_dict
 from datetime import datetime
 
 #models follow tables under DBQueries docs
@@ -17,7 +17,11 @@ class Users(ModelBase):
     display_name: Mapped[Optional[str]] = mapped_column(VARCHAR(50))
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default = func.current_timestamp())
     #One-to-Many Relationship
-    campaigns = relationship("Campaigns", back_populates = "user")
+    campaigns:Mapped[List["Campaigns"]] = relationship("Campaigns", back_populates = "user")
+    #association relationship
+    campaign_members:Mapped[List["CampaignMembers"]] = relationship("CampaignMembers", back_populates="user")
+    #one to many
+    player_characters:Mapped[List["PlayerCharacters"]] = relationship("PlayerCharacters", back_populates="user")
 
     def __repr__(self)->str:
         return f"""USER: 
