@@ -40,3 +40,7 @@ RAG powered TTRPG Assistive Web Application. Need help working through player ac
 
 ### Environment Variables
 - `DATABASE_URL=postgresql+psycopg2://campaign_forge_app:local_password@localhost:5432/campaign_forge_dev`
+
+## RAG-Notebook
+- Here we are parsing and chunking Rulebook data for clean RAG Retrieval. These methods will be taken further to extract, parse and chunk additional data for the RAG Agent. First POC is clean and efficient rulebook assistant with LLM to guide DM through user interactions with rulebook enhanced decision making
+[RAG Colab - Development](https://colab.research.google.com/drive/1R2epbnKPp1cctCzhaBizf6IlZiHq6oTc?usp=sharing)
