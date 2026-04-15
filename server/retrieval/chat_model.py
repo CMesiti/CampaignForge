@@ -15,9 +15,3 @@ def init_llm():
 
 def get_chat_model():
     return current_app.config["CHAT_MODEL"]
-
-def init_agent():
-    pass
-
-def get_agent():
-    pass

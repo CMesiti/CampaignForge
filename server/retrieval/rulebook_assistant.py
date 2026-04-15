@@ -1,8 +1,8 @@
 from langchain.agents.middleware import dynamic_prompt, ModelRequest
 from langchain.agents import create_agent
-from chroma_db import get_vector_db
-from server.retrieval.chat_model import get_chat_model, get_agent
-
+from server.retrieval.chroma_db import get_vector_db
+from server.retrieval.chat_model import get_chat_model
+from flask import current_app
 def retrieve_context(query: str, top_k = 5):
   """Retrieve D&D 5e rulebook information to answer the query."""
   #defaults 10 results
@@ -25,16 +25,21 @@ def prompt_with_context(request: ModelRequest):
   to answer questions about D&D \n\n{content}"""
   return system_message
 
+def init_agent():
+    chat_model = get_chat_model()
+    agent = create_agent(chat_model, tools=[], middleware=[prompt_with_context])
+    current_app.config['RULEBOOK_AGENT'] = agent
+
+def get_agent():
+    return current_app.config['RULEBOOK_AGENT']
 
 def get_agent_response(query):
-    chat_model = get_chat_model()
     agent = get_agent()
     # functionize and return model output
     response = ""
-    agent = create_agent(chat_model, tools=[], middleware=[prompt_with_context])
     for step in agent.stream(
         {"messages": [{"role": "user", "content": query}]},
         stream_mode="values",
     ):
-        response += step["messages"][-1]#.pretty_print()
+        response += step["messages"][-1] #.pretty_print()
     return response

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from server.retrieval.chroma_db import init_vector_db
 from server.retrieval.chat_model import init_llm
+from server.retrieval.rulebook_assistant import init_agent
 
 #app factory, on import
 load_dotenv()
@@ -22,6 +23,7 @@ def create_app(test_config = None):
         if with_rag == 'y':
             init_vector_db()
             init_llm()
+            init_agent()
 
     app.register_blueprint(userRoutes.users_bp)
     app.register_blueprint(campaignRoutes.campaigns_bp)
