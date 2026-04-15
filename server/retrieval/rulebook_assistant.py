@@ -1,0 +1,33 @@
+from langchain.agents.middleware import dynamic_prompt, ModelRequest
+from langchain.agents import create_agent
+from chroma_db import get_vector_db
+from server.retrieval.chat_model import get_chat_model
+
+def retrieve_context(query: str, top_k = 5):
+  """Retrieve D&D 5e rulebook information to answer the query."""
+  #defaults 10 results
+  collection = get_vector_db()
+  docs = collection.query(query_texts=[query], n_results=top_k)
+  contents = docs['documents'][0]
+  metadatas = docs['metadatas'][0]
+  serialized = "\n\n".join([f"CONTENT: {content}\n SOURCE: {metadata}" for content, metadata in zip(contents, metadatas)])
+  return docs, serialized
+
+#Simple 2-step RAG solution,
+@dynamic_prompt
+def prompt_with_context(request: ModelRequest):
+  """Context with user query"""
+  last_query = request.state['messages'][-1].text
+  retrieved_docs, content = retrieve_context(last_query)
+  system_message = f"""You are a helpful D&D assistant. Use the following context retrieved from the 5e rulebook to answer questions about D&D \n\n{content}"""
+  return system_message
+
+chat_model = get_chat_model()
+# functionize and return model output
+agent = create_agent(chat_model, tools=[], middleware=[prompt_with_context])
+query = "how do temporary hit points interact with damage?"
+for step in agent.stream(
+    {"messages": [{"role": "user", "content": query}]},
+    stream_mode="values",
+):
+    step["messages"][-1].pretty_print()

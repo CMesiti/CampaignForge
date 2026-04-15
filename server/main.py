@@ -5,6 +5,9 @@ from server.routes import userRoutes, campaignRoutes, authRoutes,playerCharRoute
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
+from server.retrieval.chroma_db import init_vector_db
+from server.retrieval.chat_model import init_llm
+
 #app factory, on import
 load_dotenv()
 def create_app(test_config = None):
@@ -15,6 +18,9 @@ def create_app(test_config = None):
     #Since we use the g object we enable access to current app in configuration.
     with app.app_context():
         init_db(app)
+        init_vector_db()
+        # init_llm()
+
     app.register_blueprint(userRoutes.users_bp)
     app.register_blueprint(campaignRoutes.campaigns_bp)
     app.register_blueprint(authRoutes.auth_bp)
