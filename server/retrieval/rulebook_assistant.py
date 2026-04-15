@@ -1,7 +1,7 @@
 from langchain.agents.middleware import dynamic_prompt, ModelRequest
 from langchain.agents import create_agent
 from chroma_db import get_vector_db
-from server.retrieval.chat_model import get_chat_model
+from server.retrieval.chat_model import get_chat_model, get_agent
 
 def retrieve_context(query: str, top_k = 5):
   """Retrieve D&D 5e rulebook information to answer the query."""
@@ -26,13 +26,15 @@ def prompt_with_context(request: ModelRequest):
   return system_message
 
 
-def get_agent_response():
+def get_agent_response(query):
     chat_model = get_chat_model()
+    agent = get_agent()
     # functionize and return model output
+    response = ""
     agent = create_agent(chat_model, tools=[], middleware=[prompt_with_context])
-    query = "how do temporary hit points interact with damage?"
     for step in agent.stream(
         {"messages": [{"role": "user", "content": query}]},
         stream_mode="values",
     ):
-        step["messages"][-1].pretty_print()
+        response += step["messages"][-1]#.pretty_print()
+    return response

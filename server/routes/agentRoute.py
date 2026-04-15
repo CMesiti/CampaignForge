@@ -14,5 +14,5 @@ def agent_query_response():
         return jsonify({"ERROR":
                         "Invalid request format "
                         "must be of the form - user_query: 'query'"}), 400
-        
-    return ""
+    response = get_agent_response(user_query)
+    return jsonify({"agent_response":response})
