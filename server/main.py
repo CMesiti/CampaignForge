@@ -18,8 +18,10 @@ def create_app(test_config = None):
     #Since we use the g object we enable access to current app in configuration.
     with app.app_context():
         init_db(app)
-        init_vector_db()
-        # init_llm()
+        with_rag = input("Run with RAG init? (y/n): ").strip().lower()
+        if with_rag == 'y':
+            init_vector_db()
+            init_llm()
 
     app.register_blueprint(userRoutes.users_bp)
     app.register_blueprint(campaignRoutes.campaigns_bp)
