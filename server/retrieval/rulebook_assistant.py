@@ -41,5 +41,7 @@ def get_agent_response(query):
         {"messages": [{"role": "user", "content": query}]},
         stream_mode="values",
     ):
-        response += step["messages"][-1] #.pretty_print()
+        msg = step["messages"][-1]
+        if hasattr(msg, "content") and msg.content:
+            response += msg.content 
     return response
