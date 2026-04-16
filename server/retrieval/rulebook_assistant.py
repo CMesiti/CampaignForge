@@ -3,6 +3,8 @@ from langchain.agents import create_agent
 from server.retrieval.chroma_db import get_vector_db
 from server.retrieval.chat_model import get_chat_model
 from flask import current_app
+
+
 def retrieve_context(query: str, top_k = 5):
   """Retrieve D&D 5e rulebook information to answer the query."""
   #defaults 10 results
