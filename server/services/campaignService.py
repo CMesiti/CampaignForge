@@ -26,6 +26,7 @@ class CampaignService():
         if member.user_role != "DM":
             raise ServiceError("Unauthorized User Must be DM")
         return campaign_to_dict(campaign)
+    
     def create_new_campaign(self, campaign_data):
         title = campaign_data.get("title", None)
         description = campaign_data.get("description", None) #not required
