@@ -13,7 +13,19 @@ class CampaignService():
         campaign_members = db.session.scalars(stmt).all()
         user_campaigns = [campaign_to_dict(cm.campaign) for cm in campaign_members]
         return user_campaigns
-        
+    
+    def get_campaign_by_id(self, campaign_id):
+        current_user = get_jwt_identity()
+        campaign = db.session.get(Campaigns, campaign_id)
+        if not campaign:
+            raise ServiceError(f"Cannot Find Campaign with ID: {campaign_id}")
+        #only allow DM to get the campaign information. 
+        member = db.session.get(CampaignMembers, (campaign_id, current_user))
+        if not member:
+            raise ServiceError(f"Not Enrolled in Campaign {campaign_id}")
+        if member.user_role != "DM":
+            raise ServiceError("Unauthorized User Must be DM")
+        return campaign_to_dict(campaign)
     def create_new_campaign(self, campaign_data):
         title = campaign_data.get("title", None)
         description = campaign_data.get("description", None) #not required

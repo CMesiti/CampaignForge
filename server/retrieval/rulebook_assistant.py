@@ -4,6 +4,8 @@ from server.retrieval.chroma_db import get_vector_db
 from server.retrieval.chat_model import get_chat_model
 from flask import current_app
 
+def retrieve_user_context(campaign_id=None, character_id=None):
+   pass
 
 def retrieve_context(query: str, top_k = 5):
   """Retrieve D&D 5e rulebook information to answer the query."""
@@ -22,8 +24,8 @@ def prompt_with_context(request: ModelRequest):
   last_query = request.state['messages'][-1].text
   retrieved_docs, content = retrieve_context(last_query)
   system_message = f"""
-  You are a helpful D&D assistant. 
-  Use the following context retrieved from the 5e rulebook 
+  You are a helpful D&D assistant.
+  Use the following context retrieved from the 5e rule-book 
   to answer questions about D&D \n\n{content}"""
   return system_message
 
