@@ -3,7 +3,7 @@ from sqlalchemy import select
 from server.services.util import ServiceError
 from server.config.db import db #import db variable
 from flask_jwt_extended import get_jwt_identity
-
+from server.models.campaignMemModel import Role
 
 class CampaignService():
 
@@ -21,9 +21,10 @@ class CampaignService():
             raise ServiceError(f"Cannot Find Campaign with ID: {campaign_id}")
         #only allow DM to get the campaign information. 
         member = db.session.get(CampaignMembers, (campaign_id, current_user))
+        
         if not member:
             raise ServiceError(f"Not Enrolled in Campaign {campaign_id}")
-        if member.user_role != "DM":
+        if member.user_role != Role.DM:
             raise ServiceError("Unauthorized User Must be DM")
         return campaign_to_dict(campaign)
     
@@ -44,7 +45,7 @@ class CampaignService():
         campaign_member = CampaignMembers(
             campaign_id=campaign.campaign_id, 
             user_id = current_user,
-            user_role = "DM")
+            user_role = Role.DM)
         db.session.add(campaign_member)
         db.session.commit()
         return campaign_to_dict(campaign)

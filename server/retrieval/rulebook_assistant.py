@@ -11,9 +11,14 @@ def retrieve_user_context(campaign_id=None):
    #get the current users information to supply as context. This includes basic 
    player_service = PlayerService()
    campaign_service = CampaignService()
-   player_characters = player_service.get_user_characters(campaign_id)
    current_campaign = campaign_service.get_campaign_by_id(campaign_id)
    campaign_characters = player_service.get_campaign_players(campaign_id)
+   current_campaign = {'description': current_campaign['description'], 'title':current_campaign["title"]}
+   campaign_characters = [{'name':char['character'],
+                           'class':char['classes'] , 
+                           'stats':char['stats'], 
+                           'level': char['level'], 
+                           'hitpoints':char['hitpoints'],} for char in campaign_characters]
    return {"Campaign":current_campaign, "Party":campaign_characters}
 
 def retrieve_context(query: str, top_k = 5):

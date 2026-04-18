@@ -9,7 +9,6 @@ agent_bp = Blueprint("agent", __name__, url_prefix="/agent/")
 @jwt_required()
 def agent_query_response(campaign_id):
     req_query = request.get_json()
-
     #move into retrieval folder
     user_query = req_query.get('user_query', None)
     if not user_query:
