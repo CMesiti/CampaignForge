@@ -1,4 +1,5 @@
 from server.config.db import init_db
+from server.config.logging_config import init_logging
 from flask import Flask, jsonify
 from flask_cors import CORS
 from server.routes import agentRoute, userRoutes, campaignRoutes, authRoutes,playerCharRoutes
@@ -13,6 +14,7 @@ from server.retrieval.rulebook_assistant import init_agent
 load_dotenv()
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config=True)
+    init_logging()
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET")
     jwt = JWTManager(app)
     CORS(app) #security for requests

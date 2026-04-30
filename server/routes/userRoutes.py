@@ -2,11 +2,14 @@ from flask import Blueprint, request, jsonify
 from server.services.userService import UserService
 from server.services.util import ServiceError
 from flask_jwt_extended import jwt_required
+import logging
 #blueprint syntax, name, where it's defined, and url_prefix, versioning 1 of bp
 users_bp = Blueprint("users", __name__, url_prefix = "/v1/users/")
+logger = logging.getLogger(__name__)
 
 @users_bp.route("/")
 def get_users():
+    logger.info('Request: get_users ')
     try:
         service = UserService()
         user_data = service.get_user_data()
