@@ -2,26 +2,32 @@ from flask import Blueprint, request, jsonify
 from server.services.userService import UserService
 from server.services.util import ServiceError
 from flask_jwt_extended import jwt_required
-import logging
+import logging, time
 #blueprint syntax, name, where it's defined, and url_prefix, versioning 1 of bp
 users_bp = Blueprint("users", __name__, url_prefix = "/v1/users/")
 logger = logging.getLogger(__name__)
 
 @users_bp.route("/")
 def get_users():
-    logger.info('Revieved Request: get_users')
+    start = time.perf_counter()
     try:
         service = UserService()
         user_data = service.get_user_data()
-        return jsonify({"user_data": user_data}), 200
+        status_code = 200
+        end = time.perf_counter()
+        execution_time_ms = int((end - start) * 1000)
+        logger.info(f"{request.method} - {execution_time_ms}ms - 200")
+        return jsonify({"user_data": user_data}), status_code
     except ServiceError as e:
+        status_code = 400
         return jsonify({
             "ERROR":str(e)
-            }), 400
+            }), status_code
     except Exception as e:
+        status_code = 500
         return jsonify({
             "ERROR":str(e)
-            }), 500
+            }), status_code
 
 
 @users_bp.route("/", methods=["POST"])

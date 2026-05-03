@@ -9,7 +9,7 @@ def init_logging():
     log_file = log_dir / "app.log"
     print(log_file)
     log_dir.mkdir(parents=True, exist_ok=True)
-    fmt = '%(asctime)s - %(levelname)s - [%(name)s] - %(message)s'
+    fmt = '%(asctime)s - %(module)s - %(levelname)s - [%(name)s] - %(message)s'
     handler = RotatingFileHandler(log_file ,maxBytes=1_000_000, backupCount=3)
     logging.basicConfig(format=fmt, 
                         handlers=[handler],
