@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 @users_bp.route("/")
 def get_users():
-    logger.info('Request: get_users ')
+    logger.info('Revieved Request: get_users')
     try:
         service = UserService()
         user_data = service.get_user_data()
@@ -26,6 +26,7 @@ def get_users():
 
 @users_bp.route("/", methods=["POST"])
 def register_user():
+    logger.info('Revieved Request: register_user - userRoutes')
     try:
         data = request.get_json()
         service = UserService()
