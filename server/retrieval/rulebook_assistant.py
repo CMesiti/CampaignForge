@@ -2,10 +2,9 @@ from langchain.agents.middleware import dynamic_prompt, ModelRequest
 from langchain.agents import create_agent
 from server.retrieval.chroma_db import get_vector_db
 from server.retrieval.chat_model import get_chat_model
-from flask import current_app
+from flask import current_app, g
 from server.services.campaignService import CampaignService
 from server.services.playerCharService import PlayerService
-
 
 def retrieve_user_context(campaign_id=None):
    #get the current users information to supply as context. This includes basic 
@@ -52,16 +51,20 @@ def get_agent():
     return current_app.config['RULEBOOK_AGENT']
 
 def get_agent_response(query, campaign_id):
-    agent = get_agent()
-    user_context = retrieve_user_context(campaign_id)
-    # functionize and return model output
-    response = ""
-    for step in agent.stream(
-        {"messages": [{"role": "user", "content": query + 
-                       f"The current party and campaign is as follows: {user_context}"}]},
-        stream_mode="values",
-    ):
-        msg = step["messages"][-1]
-        if hasattr(msg, "content") and msg.content:
-            response += msg.content 
-    return response
+    try:
+        agent = get_agent()
+        user_context = retrieve_user_context(campaign_id)
+        # functionize and return model output
+        chunks = []
+        for step in agent.stream(
+            {"messages": [{"role": "user", "content": query + 
+                        f"The current party and campaign is as follows: {user_context}"}]},
+            stream_mode="values",):
+
+            msg = step["messages"][-1]
+            if hasattr(msg, "content") and msg.content:
+                # yield msg.content
+                chunks.append(msg.content) 
+        return "".join(chunks)
+    except Exception as e:
+       raise Exception(e)

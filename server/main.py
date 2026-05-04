@@ -39,13 +39,12 @@ def create_app(test_config = None):
 
     @app.after_request
     def log_request(response):
-        exec_time = int((time.perf_counter - g.req_time)*1000)
-        logger.info(f'{request.method} - {exec_time} - {response.status_code}')
+        exec_time = int((time.perf_counter() - g.req_time)*1000)
+        logger.info(f'{request.method} - {exec_time}ms - {response.status_code}')
         return response
     
 
     return app
-
 
 app = create_app()
 @app.route("/status")

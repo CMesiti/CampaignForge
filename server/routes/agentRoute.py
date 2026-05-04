@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from server.retrieval.rulebook_assistant import get_agent_response
 from flask_jwt_extended import jwt_required
 
@@ -16,7 +16,8 @@ def agent_query_response(campaign_id):
                         "Invalid request format "
                         "must be of the form - user_query: 'query'"}), 400
     try:
-        response = get_agent_response(user_query, campaign_id)
-        return jsonify({"agent_response":response})
+        return Response(get_agent_response(user_query, campaign_id))
+        # response = get_agent_response(user_query, campaign_id)
+        # return jsonify({"agent_response":response})
     except Exception as e:
         return jsonify({"ERROR": str(e)}), 500

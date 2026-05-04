@@ -27,9 +27,7 @@ def login():
         data = request.get_json()
         #verify user
         service = UserService()
-        print(data)
         user = service.login_user(data)
-        print(f"Logging user id {type(user.user_id), user.user_id}")
         #add additional info to JWT with add additional claims arg in create function
         access_token = create_access_token(identity = user.user_id)
         return jsonify(access_token=access_token)
