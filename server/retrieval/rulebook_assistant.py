@@ -63,7 +63,6 @@ def get_agent_response(query, campaign_id):
 
             msg = step["messages"][-1]
             if hasattr(msg, "content") and msg.content:
-                # yield msg.content
                 chunks.append(msg.content) 
         return "".join(chunks)
     except Exception as e:
