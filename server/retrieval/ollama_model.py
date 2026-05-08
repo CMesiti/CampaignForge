@@ -1,7 +1,5 @@
 from langchain_ollama import ChatOllama
-from langchain.tools import tool
 from flask import current_app
-from langchain.messages import AIMessage
 from chroma_db import init_vector_db
 from langchain.agents.middleware import dynamic_prompt, ModelRequest
 from langchain.agents import create_agent
@@ -20,7 +18,7 @@ def retrieval_tool(query:str,top_k=5):
 def prompt_with_context(request: ModelRequest):
   """Context with user query"""
   last_query = request.state['messages'][-1].text
-  retrieved_docs, content = retrieval_tool(last_query)
+  content = retrieval_tool(last_query)
   system_message = f"""
   You are a helpful D&D assistant. 
   Use the following context retrieved from the 5e rule-book 
@@ -53,9 +51,6 @@ def get_agent_response(query):
             chunks.append(msg.content) 
     return "".join(chunks)
     
-get_agent_response("I need information on the druid level 1 spells")
-
-
 
 # llm = init_llm()
 # messages = [
