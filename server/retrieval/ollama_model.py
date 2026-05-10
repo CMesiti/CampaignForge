@@ -60,7 +60,7 @@ messages = [
     "to answer questions about D&D"},
     {"role": "user", "content": "What are the highest level druid spells and their effects?"}]
 response = chat(model='llama3.1', messages = messages, tools=[retrieval_tool])
-messages.append(response.message)
+messages.append(response.message) # type: ignore
 if response.message.tool_calls:
   print("toolCall")
   # only recommended for models which only return a single tool call
