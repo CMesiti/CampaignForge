@@ -24,7 +24,7 @@ def get_user_campaigns():
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
     
 @campaigns_bp.route("/create", methods=["POST"])
@@ -43,7 +43,7 @@ def create_campaign():
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 
@@ -62,7 +62,7 @@ def join_campaign(campaign_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 
@@ -80,7 +80,7 @@ def update_campaign(campaign_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 @campaigns_bp.route("/<uuid:campaign_id>/<uuid:user_id>")
@@ -96,7 +96,7 @@ def campaign_remove_user(campaign_id, user_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 
@@ -113,6 +113,6 @@ def delete_campaign(campaign_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
     

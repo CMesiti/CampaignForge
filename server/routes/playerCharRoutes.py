@@ -19,7 +19,7 @@ def get_player_characters(campaign_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 
@@ -37,7 +37,7 @@ def create_player_character(campaign_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
     
 
@@ -55,7 +55,7 @@ def update_player_character(character_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
     
 
@@ -73,7 +73,7 @@ def delete_player_character(character_id):
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), 500
 
 
