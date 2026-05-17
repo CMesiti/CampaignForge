@@ -7,7 +7,7 @@ def init_vector_db():
     chroma_client = chromadb.PersistentClient(path='/content/drive/MyDrive/Narrative-OS-Data')
     #create a collection
     collection = chroma_client.get_or_create_collection(name=collection_name)
-    # current_app.config["CHROMA_DB"] = collection
+    current_app.config["CHROMA_DB"] = collection
     return collection #***DELETE THIS
 
 def get_vector_db():

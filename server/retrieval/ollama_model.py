@@ -69,6 +69,5 @@ if response.message.tool_calls:
   result = retrieval_tool(**call.function.arguments)
   # add the tool result to the messages
   messages.append({"role": "tool", "tool_name": call.function.name, "content": str(result)})
-
   final_response = chat(model="llama3.1", messages=messages, tools=[retrieval_tool])
   print(final_response.message.content)

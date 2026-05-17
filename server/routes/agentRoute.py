@@ -20,4 +20,4 @@ def agent_query_response(campaign_id):
         # response = get_agent_response(user_query, campaign_id)
         # return jsonify({"agent_response":response})
     except Exception as e:
-        return jsonify({"ERROR": str(e)}), 500
+        return jsonify({"ERROR": "Internal server error "+str(e)}), 500

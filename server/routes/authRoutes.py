@@ -34,4 +34,4 @@ def login():
     except ServiceError as e:
         return jsonify({"ERROR":str(e)}), 401
     except Exception as e:
-        return jsonify({"ERROR":str(e)}), 500
+        return jsonify({"ERROR":"Internal server error "+str(e)}), 500

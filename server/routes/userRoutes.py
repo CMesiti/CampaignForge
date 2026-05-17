@@ -21,7 +21,7 @@ def get_users():
     except Exception as e:
         status_code = 500
         return jsonify({
-            "ERROR":str(e)
+            "ERROR":"Internal server error "+str(e)
             }), status_code
 
 
@@ -38,7 +38,7 @@ def register_user():
             }), 400
     except Exception as e:
         return jsonify({
-            "ERROR": str(e)
+            "ERROR": "Internal server error "+str(e)
             }), 500
 
 # Protect a route with jwt_required, which will kick out requests
@@ -58,7 +58,7 @@ def update_user():
              }), 400
     except Exception as e:
         return jsonify(
-            {"ERROR": str(e)
+            {"ERROR": "Internal server error "+str(e)
              }), 500
 
 
@@ -77,6 +77,6 @@ def remove_user():
              }), 400
     except Exception as e:
         return jsonify(
-            {"ERROR": str(e)
+            {"ERROR": "Internal server error "+str(e)
              }), 500
     #add session auth, ensure current user request, and recieve password
