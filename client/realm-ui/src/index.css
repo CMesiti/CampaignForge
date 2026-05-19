@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg-base:        #0c0a08;
+  --bg-surface:     #141210;
+  --bg-raised:      #1c1915;
+  --bg-overlay:     #252018;
+
+  /* Borders */
+  --border-dim:     rgba(180, 150, 90, 0.12);
+  --border-mid:     rgba(180, 150, 90, 0.25);
+  --border-accent:  rgba(180, 150, 90, 0.5);
+
+  /* Text */
+  --text-primary:   #e8dfc8;
+  --text-secondary: #9a8f78;
+  --text-muted:     #5a5344;
+  --text-gold:      #c8a84b;
+  --text-danger:    #c0624a;
+
+  /* Accent */
+  --gold:           #c8a84b;
+  --gold-dim:       rgba(200, 168, 75, 0.15);
+  --gold-glow:      rgba(200, 168, 75, 0.08);
+  --crimson:        #8b2e1e;
+  --crimson-dim:    rgba(139, 46, 30, 0.2);
+
+  /* Typography */
+  --font-display:   'Cinzel', serif;
+  --font-body:      'Crimson Pro', serif;
+  --font-mono:      'JetBrains Mono', monospace;
+
+  /* Radius */
+  --radius-sm:      3px;
+  --radius-md:      6px;
+  --radius-lg:      10px;
+
+  /* Transitions */
+  --ease:           cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* Subtle parchment-grain background texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 200px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  color: var(--text-gold);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-accent); }

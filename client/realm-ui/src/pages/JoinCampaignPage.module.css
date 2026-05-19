@@ -1,0 +1,148 @@
+.page {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.inner {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: -1rem;
+}
+
+.lookupForm {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.lookupForm > :first-child {
+  flex: 1;
+}
+
+.errorMsg {
+  font-size: 0.85rem;
+  color: var(--text-danger);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--crimson-dim);
+  border: 1px solid rgba(139, 46, 30, 0.3);
+}
+
+/* Preview card */
+.previewCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.previewIcon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-dim);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.previewTitle {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+.previewMeta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.previewDesc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.previewTags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.previewDivider {
+  height: 1px;
+  background: var(--border-dim);
+}
+
+.joinBtn {
+  width: 100%;
+}
+
+/* Success */
+.successPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.successRune {
+  font-size: 3rem;
+  color: var(--text-gold);
+}
+
+.successTitle {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.successSub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
