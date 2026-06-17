@@ -1,5 +1,5 @@
 from flask import Flask, Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, JWTManager, set_access_cookies, unset_jwt_cookies
 from server.services.userService import UserService
 from server.services.util import ServiceError
 #Main ways for session authenticaiton:
@@ -30,7 +30,9 @@ def login():
         user = service.login_user(data)
         #add additional info to JWT with add additional claims arg in create function
         access_token = create_access_token(identity = user.user_id)
-        return jsonify(access_token=access_token)
+        response = jsonify({"message":"Successfully Logged In"})
+        set_access_cookies(response, access_token)
+        return response
     except ServiceError as e:
         return jsonify({"ERROR":str(e)}), 401
     except Exception as e:

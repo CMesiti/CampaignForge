@@ -3,12 +3,13 @@ from server.config.logging_config import init_logging
 from flask import Flask, jsonify, g, request
 from flask_cors import CORS
 from server.routes import agentRoute, userRoutes, campaignRoutes, authRoutes,playerCharRoutes
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, get_jwt, create_access_token, get_jwt_identity, set_access_cookies
 from dotenv import load_dotenv
 import os, time, logging
 from server.retrieval.chroma_db import init_vector_db
 from server.retrieval.chat_model import init_llm
 from server.retrieval.rulebook_assistant import init_agent
+from datetime import datetime, timedelta, timezone
 
 #app factory, on import
 load_dotenv()
@@ -17,6 +18,7 @@ def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config=True)
     init_logging()
     app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET")
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=15)
     jwt = JWTManager(app)
     CORS(app) #security for requests
     #Since we use the g object we enable access to current app in configuration.
@@ -43,7 +45,19 @@ def create_app(test_config = None):
         logger.info(f'{request.method} - {exec_time}ms - {response.status_code}')
         return response
     
-
+    @app.after_request
+    def renew_expiring_jwts(response):
+        try:
+            exp_timestamp = get_jwt()['exp']
+            now = datetime.now(timezone.utc)
+            target_timestamp = datetime.timestamp(now + timedelta(minutes=5))
+            if target_timestamp > exp_timestamp:
+                logger.info(f'Renew JWT token within target timestamp')
+                access_token = create_access_token(identity = get_jwt_identity())
+                set_access_cookies(response, access_token)
+        except (RuntimeError, KeyError):
+            # Case where there is not a valid JWT. Just return the original response
+            return response
     return app
 
 app = create_app()
