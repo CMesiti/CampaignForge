@@ -20,7 +20,7 @@ export function AppShell({ children }: AppShellProps) {
         <div className={styles.headerInner}>
           <Link to="/campaigns" className={styles.logo}>
             <span className={styles.logoRune}>⚔</span>
-            <span className={styles.logoText}>Realm</span>
+            <span className={styles.logoText}>NarrativeOS</span>
           </Link>
 
           <nav className={styles.nav}>

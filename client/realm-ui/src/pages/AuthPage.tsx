@@ -44,7 +44,7 @@ export function AuthPage() {
         {/* Logo */}
         <div className={styles.brand}>
           <span className={styles.brandRune}>⚔</span>
-          <h1 className={styles.brandName}>Realm</h1>
+          <h1 className={styles.brandName}>NarrativeOS</h1>
           <p className={styles.brandTagline}>Your campaign companion</p>
         </div>
 
