@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "argon2-cffi>=25.1.0",
     "bcrypt>=5.0.0",
-    "chromadb>=1.5.7",
+    "chromadb>=1.5.9",
     "coverage>=7.13.4",
     "faker>=40.1.2",
     "flask>=3.1.2",
