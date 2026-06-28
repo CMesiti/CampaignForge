@@ -1,5 +1,5 @@
 #initial test authentication request login
-class AuthActions(obj):
+class AuthActions():
     def __init__(self):
         pass
     def login(self, username, password):
